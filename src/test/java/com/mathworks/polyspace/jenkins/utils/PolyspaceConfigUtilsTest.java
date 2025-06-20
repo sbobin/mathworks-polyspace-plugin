@@ -25,6 +25,7 @@ import java.nio.charset.StandardCharsets; // Added import
 import com.mathworks.polyspace.jenkins.config.Messages;
 import hudson.tasks.Mailer; // Added import
 import org.mockito.Mockito; // Explicit import for clarity, though covered by static import
+import org.mockito.quality.Strictness; // Added import
 
 @ExtendWith(MockitoExtension.class)
 class PolyspaceConfigUtilsTest {
@@ -361,10 +362,10 @@ class PolyspaceConfigUtilsTest {
     @Test
     void testCheckPolyspaceCommand_CommandNotFound() {
         // Prepare mocks for Mailer.descriptor().getCharset() with lenient static mocking for Mailer
-        try (MockedStatic<Mailer> mockedMailer = Mockito.mockStatic(Mailer.class, Mockito.LENIENT)) {
+        // Corrected way to set lenient static mock:
+        try (MockedStatic<Mailer> mockedMailer = Mockito.mockStatic(Mailer.class, Mockito.withSettings().strictness(Strictness.LENIENT))) {
             Mailer.DescriptorImpl mockDescriptor = Mockito.mock(Mailer.DescriptorImpl.class);
             mockedMailer.when(Mailer::descriptor).thenReturn(mockDescriptor);
-            // Individual lenient() removed here as the static mock context is lenient
             Mockito.when(mockDescriptor.getCharset()).thenReturn(StandardCharsets.UTF_8.name());
 
             // Original test logic
