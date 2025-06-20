@@ -320,8 +320,8 @@ class PolyspaceConfigUtilsTest {
         try (MockedStatic<Mailer> mockedMailer = Mockito.mockStatic(Mailer.class)) {
             Mailer.DescriptorImpl mockDescriptor = Mockito.mock(Mailer.DescriptorImpl.class);
             mockedMailer.when(Mailer::descriptor).thenReturn(mockDescriptor);
-            // Corrected line:
-            Mockito.when(mockDescriptor.getCharset()).thenReturn(StandardCharsets.UTF_8.name());
+            // Corrected line with lenient():
+            Mockito.lenient().when(mockDescriptor.getCharset()).thenReturn(StandardCharsets.UTF_8.name());
 
             // Original test logic
             PolyspaceConfigUtils utils = new PolyspaceConfigUtils();
