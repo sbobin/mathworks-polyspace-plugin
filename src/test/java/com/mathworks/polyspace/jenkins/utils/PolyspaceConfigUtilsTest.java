@@ -20,8 +20,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.nio.charset.StandardCharsets; // Added import
 
 import com.mathworks.polyspace.jenkins.config.Messages;
+import hudson.tasks.Mailer; // Added import
+import org.mockito.Mockito; // Explicit import for clarity, though covered by static import
 
 @ExtendWith(MockitoExtension.class)
 class PolyspaceConfigUtilsTest {
@@ -313,44 +316,59 @@ class PolyspaceConfigUtilsTest {
 
     @Test
     void testCheckPolyspaceCommand_SuccessfulExecution() {
-        PolyspaceConfigUtils utils = new PolyspaceConfigUtils();
-        List<String> successfulCommand;
-        // Determine OS and use a command that is known to succeed and return 0
-        if (hudson.Functions.isWindows()) {
-            successfulCommand = Arrays.asList("cmd.exe", "/c", "echo success");
-        } else {
-            // 'true' command exists on Unix-like systems and its purpose is to return 0
-            successfulCommand = Arrays.asList("true");
+        // Prepare mocks for Mailer.descriptor().getCharset()
+        try (MockedStatic<Mailer> mockedMailer = Mockito.mockStatic(Mailer.class)) {
+            Mailer.DescriptorImpl mockDescriptor = Mockito.mock(Mailer.DescriptorImpl.class);
+            mockedMailer.when(Mailer::descriptor).thenReturn(mockDescriptor);
+            Mockito.when(mockDescriptor.getCharset()).thenReturn(StandardCharsets.UTF_8);
+
+            // Original test logic
+            PolyspaceConfigUtils utils = new PolyspaceConfigUtils();
+            List<String> successfulCommand;
+            if (hudson.Functions.isWindows()) {
+                successfulCommand = Arrays.asList("cmd.exe", "/c", "echo success");
+            } else {
+                successfulCommand = Arrays.asList("true");
+            }
+            assertTrue(utils.checkPolyspaceCommand(successfulCommand),
+                    "checkPolyspaceCommand should return true for a known successful command: " + String.join(" ", successfulCommand));
         }
-        assertTrue(utils.checkPolyspaceCommand(successfulCommand),
-                "checkPolyspaceCommand should return true for a known successful command: " + String.join(" ", successfulCommand));
     }
 
     @Test
     void testCheckPolyspaceCommand_FailedExecution() {
-        PolyspaceConfigUtils utils = new PolyspaceConfigUtils();
-        List<String> failedCommand;
-        // Determine OS and use a command that is known to fail and return non-zero
-        if (hudson.Functions.isWindows()) {
-            // 'exit 1' makes cmd.exe return 1
-            failedCommand = Arrays.asList("cmd.exe", "/c", "exit 1");
-        } else {
-            // 'false' command exists on Unix-like systems and its purpose is to return 1
-            failedCommand = Arrays.asList("false");
+        // Prepare mocks for Mailer.descriptor().getCharset()
+        try (MockedStatic<Mailer> mockedMailer = Mockito.mockStatic(Mailer.class)) {
+            Mailer.DescriptorImpl mockDescriptor = Mockito.mock(Mailer.DescriptorImpl.class);
+            mockedMailer.when(Mailer::descriptor).thenReturn(mockDescriptor);
+            Mockito.when(mockDescriptor.getCharset()).thenReturn(StandardCharsets.UTF_8);
+
+            // Original test logic
+            PolyspaceConfigUtils utils = new PolyspaceConfigUtils();
+            List<String> failedCommand;
+            if (hudson.Functions.isWindows()) {
+                failedCommand = Arrays.asList("cmd.exe", "/c", "exit 1");
+            } else {
+                failedCommand = Arrays.asList("false");
+            }
+            assertFalse(utils.checkPolyspaceCommand(failedCommand),
+                    "checkPolyspaceCommand should return false for a known failing command: " + String.join(" ", failedCommand));
         }
-        assertFalse(utils.checkPolyspaceCommand(failedCommand),
-                "checkPolyspaceCommand should return false for a known failing command: " + String.join(" ", failedCommand));
     }
 
     @Test
     void testCheckPolyspaceCommand_CommandNotFound() {
-        PolyspaceConfigUtils utils = new PolyspaceConfigUtils();
-        // This command should ideally not exist on any system.
-        List<String> nonExistentCommand = Arrays.asList("aCommandThatTrulyShouldNotExist123xyz");
+        // Prepare mocks for Mailer.descriptor().getCharset()
+        try (MockedStatic<Mailer> mockedMailer = Mockito.mockStatic(Mailer.class)) {
+            Mailer.DescriptorImpl mockDescriptor = Mockito.mock(Mailer.DescriptorImpl.class);
+            mockedMailer.when(Mailer::descriptor).thenReturn(mockDescriptor);
+            Mockito.when(mockDescriptor.getCharset()).thenReturn(StandardCharsets.UTF_8);
 
-        // ProcessBuilder.start() for a non-existent command typically throws IOException.
-        // The checkPolyspaceCommand method catches IOException and returns false.
-        assertFalse(utils.checkPolyspaceCommand(nonExistentCommand),
-                "checkPolyspaceCommand should return false when the command is not found (expecting IOException to be caught).");
+            // Original test logic
+            PolyspaceConfigUtils utils = new PolyspaceConfigUtils();
+            List<String> nonExistentCommand = Arrays.asList("aCommandThatTrulyShouldNotExist123xyz");
+            assertFalse(utils.checkPolyspaceCommand(nonExistentCommand),
+                    "checkPolyspaceCommand should return false when the command is not found (expecting IOException to be caught).");
+        }
     }
 }
