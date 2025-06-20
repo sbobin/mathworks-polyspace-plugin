@@ -320,7 +320,8 @@ class PolyspaceConfigUtilsTest {
         try (MockedStatic<Mailer> mockedMailer = Mockito.mockStatic(Mailer.class)) {
             Mailer.DescriptorImpl mockDescriptor = Mockito.mock(Mailer.DescriptorImpl.class);
             mockedMailer.when(Mailer::descriptor).thenReturn(mockDescriptor);
-            Mockito.when(mockDescriptor.getCharset()).thenReturn(StandardCharsets.UTF_8);
+            // Corrected line:
+            Mockito.when(mockDescriptor.getCharset()).thenReturn(StandardCharsets.UTF_8.name());
 
             // Original test logic
             PolyspaceConfigUtils utils = new PolyspaceConfigUtils();
@@ -341,7 +342,8 @@ class PolyspaceConfigUtilsTest {
         try (MockedStatic<Mailer> mockedMailer = Mockito.mockStatic(Mailer.class)) {
             Mailer.DescriptorImpl mockDescriptor = Mockito.mock(Mailer.DescriptorImpl.class);
             mockedMailer.when(Mailer::descriptor).thenReturn(mockDescriptor);
-            Mockito.when(mockDescriptor.getCharset()).thenReturn(StandardCharsets.UTF_8);
+            // Corrected line:
+            Mockito.when(mockDescriptor.getCharset()).thenReturn(StandardCharsets.UTF_8.name());
 
             // Original test logic
             PolyspaceConfigUtils utils = new PolyspaceConfigUtils();
@@ -362,7 +364,8 @@ class PolyspaceConfigUtilsTest {
         try (MockedStatic<Mailer> mockedMailer = Mockito.mockStatic(Mailer.class)) {
             Mailer.DescriptorImpl mockDescriptor = Mockito.mock(Mailer.DescriptorImpl.class);
             mockedMailer.when(Mailer::descriptor).thenReturn(mockDescriptor);
-            Mockito.when(mockDescriptor.getCharset()).thenReturn(StandardCharsets.UTF_8);
+            // Corrected line:
+            Mockito.when(mockDescriptor.getCharset()).thenReturn(StandardCharsets.UTF_8.name());
 
             // Original test logic
             PolyspaceConfigUtils utils = new PolyspaceConfigUtils();
